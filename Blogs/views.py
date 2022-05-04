@@ -1,55 +1,28 @@
 from django.http import HttpResponse
-import requests
-from test import count_k
-
-
-def get_params(query, data):
-    data2 = data[0]
-    # data2 -  dict contains likes awards etc
-    # data - full  json data
-
-    params = ""
-    if query == "likes":
-        params = data2['data']['children'][0]['data']['score']
-    elif query == "awards":
-        params = data2['data']['children'][0]['data']['total_awards_received']
-    elif query == "created":
-        params = data2['data']['children'][0]['data']['total_awards_received']
-    elif query == "count":
-        params = count_k(data)
-    return params
-
-
-def get_awards(request, pk):
-    headers = {
-        'User-Agent': 'My User Agent 1.0',
-        'From': 'saddestsempai@gmail.com'
-    }
-
-
-    response = requests.get(
-        f"https://www.reddit.com/{pk}.json",
-        headers=headers
-    )
-
-
-    query = request.GET.get("search")
-
-
-    data = response.json()
-    params = get_params(query=query, data=data)
-    return HttpResponse(f"<html><body>{query}:{params}</body></html>")
+from .helper import request_data,count_k
 
 
 
+def likes(request, website_name):
+
+    data = request_data(website_name)
+    score = data[0]['data']['children'][0]['data']['score']
+    return HttpResponse(f"<html><body><h3>likes </h3>{score}</body></html>")
 
 
+def awards(request, website_name):
+    data = request_data(website_name)
+    score = data[0]['data']['children'][0]['data']['total_awards_received']
+    return HttpResponse(f"<html><body><h3>awards </h3>{score}</body></html>")
 
 
-    # score = data['data']['children'][0]['data']['score']
-    # awards = data['data']['children'][0]['data']['total_awards_received']
-    # created_utc = data['data']['children'][0]['data']['created_utc']
+def created(request, website_name):
+    data = request_data(website_name)
+    score = data[0]['data']['children'][0]['data']['created_utc']
+    return HttpResponse(f"<html><body><h3>created_at </h3>{score}</body></html>")
 
-    #
-    # with open("response.json", "w") as outfile:
-    #     json.dump(data[0], outfile)
+
+def count_keys(request,website_name):
+    data = request_data(website_name)
+    score = count_k(data)
+    return HttpResponse(f"<html><body><h3>amount of keys </h3>{score}</body></html>")
