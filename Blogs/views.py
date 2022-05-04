@@ -4,13 +4,17 @@ from test import count_k
 
 
 def get_params(query, data):
+    data2 = data[0]
+    # data2 -  dict contains likes awards etc
+    # data - full  json data
+
     params = ""
     if query == "likes":
-        params = data['data']['children'][0]['data']['score']
+        params = data2['data']['children'][0]['data']['score']
     elif query == "awards":
-        params = data['data']['children'][0]['data']['total_awards_received']
+        params = data2['data']['children'][0]['data']['total_awards_received']
     elif query == "created":
-        params = data['data']['children'][0]['data']['total_awards_received']
+        params = data2['data']['children'][0]['data']['total_awards_received']
     elif query == "count":
         params = count_k(data)
     return params
@@ -32,7 +36,7 @@ def get_awards(request, pk):
     query = request.GET.get("search")
 
 
-    data = response.json()[0]
+    data = response.json()
     params = get_params(query=query, data=data)
     return HttpResponse(f"<html><body>{query}:{params}</body></html>")
 
